@@ -14,6 +14,16 @@ Or Copy The Following Link: [https://Abrahman-ra.github.io/To-Do-List/]
 
 ---
 
+## ChangeLog
+
+### V1.1 (09/05/2023)
+
+- [x] Significantly enhanced the website responsiveness
+- [x] Enhanced the website colors
+- [x] Solved: empty tasks are added
+
+---
+
 ## Code Structure :computer:
 
 1. Initialization
@@ -32,7 +42,7 @@ Or Copy The Following Link: [https://Abrahman-ra.github.io/To-Do-List/]
 
 ## Limitations :exclamation:
 
-- Responsiveness (I am not concerned with CSS as much as the functionality)
-  - I might update it later
-- When entering duplicate tasks, and deleting one of them, it will delete only the last duplicate task in the list.
+- [x] Responsiveness (I am not concerned with CSS as much as the functionality)
+  - I might update it later (Edit: solved in V1.1)
+- [ ] When entering duplicate tasks, and deleting one of them, it will delete only the last duplicate task in the list.
   - This is not very user harmful, the only disadvantage for this is that the order might be messed

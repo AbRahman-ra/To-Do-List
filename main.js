@@ -17,10 +17,12 @@ window.addEventListener("DOMContentLoaded", () => {
 // [2] Reloading Page
 window.addEventListener("DOMContentLoaded", function () {
   let localStorageTasks = localStorage.getItem("tasks");
+
   // [2.1] If there are existing tasks in local storage
   if (localStorageTasks !== null) {
     // [2.2] Get the tasks as an array
     tasks = JSON.parse(window.localStorage["tasks"]);
+
     // [2.3] Print the tasks on document
     printAllTasks();
   }
@@ -42,20 +44,32 @@ inputTextField.addEventListener("keydown", function (e) {
 
 // [5 - FUNCTION] Print All Existing Tasks On Page Load
 let printAllTasks = function () {
-  tasks.forEach(function (t) {
+  tasks.forEach(function (t, i) {
     // [5.1] Create a section for each output task
     let tSection = document.createElement("section");
     tSection.classList.add("output-task");
-    // [5.2] Create a span that handles each output task text
-    let outputTask = document.createElement("span");
+    // [5.2] Create a container that handles each output task text with checkbox
+    let checkboxDiv = document.createElement("div");
+
+    let outputTask = document.createElement("input");
+    outputTask.type = "checkbox";
+    outputTask.id = `task-${tasks.length - i}-checkbox`;
+    outputTask.checked = false;
     outputTask.classList.add("output-task-text");
-    outputTask.innerHTML = t;
+
+    let outputTaskLabel = document.createElement("label");
+    outputTaskLabel.setAttribute("for", outputTask.id);
+    outputTaskLabel.classList.add("output-task-text");
+    outputTaskLabel.innerHTML = t;
+
+    checkboxDiv.appendChild(outputTask);
+    checkboxDiv.appendChild(outputTaskLabel);
     // [5.3] Create a delete button
     let delButton = document.createElement("button");
     delButton.classList.add("del-button");
-    delButton.innerHTML = "Delete";
+    delButton.innerHTML = `×`;
     // [5.4] Append text and button to task section
-    tSection.appendChild(outputTask);
+    tSection.appendChild(checkboxDiv);
     tSection.appendChild(delButton);
     // [5.5] Append task section to the big output section
     outputSection.append(tSection);
@@ -69,16 +83,20 @@ let printAllTasks = function () {
 let insertTask = function () {
   // [6.1] Obtain the task
   let userInput = inputTextField.value;
-  // [6.2] Push it to an "tasks" array (descending order)
-  tasks.unshift(userInput);
-  // [6.3] Update the local storage
-  window.localStorage.tasks = JSON.stringify(tasks);
-  console.log(localStorage.tasks);
-  // [6.4] Print the tasks on the document
-  printTask();
-  // [6.5] Clear the input text field and focus again
-  inputTextField.value = "";
-  inputTextField.focus();
+  if (userInput.length !== 0) {
+    inputTextField.setAttribute("placeholder", "Add another task");
+    // [6.2] Push it to an "tasks" array (descending order)
+    tasks.unshift(userInput);
+    // [6.3] Update the local storage
+    window.localStorage.tasks = JSON.stringify(tasks);
+    // [6.4] Print the tasks on the document (Section 7)
+    printTask();
+    // [6.5] Clear the input text field and focus again
+    inputTextField.value = "";
+    inputTextField.focus();
+  } else {
+    inputTextField.setAttribute("placeholder", "Can't add an empty task");
+  }
 };
 
 // [7 - FUNCTION] Print the last (added) task on the document
@@ -88,15 +106,22 @@ let printTask = function () {
   let tSection = document.createElement("section");
   tSection.classList.add("output-task");
   // [7.2] Create a span that handles each output task text
-  let outputTask = document.createElement("span");
-  outputTask.classList.add("output-task-text");
-  outputTask.innerHTML = userInput;
+  let checkboxDiv = document.createElement("div");
+  let outputTask = document.createElement("input");
+  outputTask.type = "checkbox";
+  outputTask.id = tasks.length;
+  let outputTaskLabel = document.createElement("label");
+  outputTaskLabel.setAttribute("for", outputTask.id);
+  outputTaskLabel.classList.add("output-task-text");
+  outputTaskLabel.innerHTML = userInput;
   // [7.3] Create a delete button
   let delButton = document.createElement("button");
   delButton.classList.add("del-button");
-  delButton.innerHTML = "Delete";
+  delButton.innerHTML = `×`;
   // [7.4] Append text and button to task section
-  tSection.appendChild(outputTask);
+  checkboxDiv.appendChild(outputTask);
+  checkboxDiv.appendChild(outputTaskLabel);
+  tSection.appendChild(checkboxDiv);
   tSection.appendChild(delButton);
   // [7.5] Prepend task section to the big output section
   outputSection.prepend(tSection);
@@ -111,7 +136,7 @@ let activateDeleteButton = function (sectionsWithDelBtn) {
   // [8.1] Get every delete button
   sectionsWithDelBtn.forEach(function (t) {
     let delButton = t.querySelector("button");
-    let taskToBeRm = t.querySelector("span").textContent;
+    let taskToBeRm = t.querySelector("label").textContent;
     // [8.2] Event trigger
     delButton.onclick = function () {
       // [8.2.1] Remove the whole HTML Section
