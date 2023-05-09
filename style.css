@@ -78,6 +78,7 @@ input[type="text"]:focus {
 }
 
 .del-button {
+  font-size: 20px;
   font-weight: bold;
   padding: 5px;
   color: white;
