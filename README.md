@@ -16,6 +16,10 @@ Or Copy The Following Link: [https://Abrahman-ra.github.io/To-Do-List/]
 
 ## ChangeLog
 
+### V1.2 (09/05/2023)
+
+- [x] Solved a bug: checkboxes are not saved on page load
+
 ### V1.1 (09/05/2023)
 
 - [x] Significantly enhanced the website responsiveness

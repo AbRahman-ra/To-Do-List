@@ -8,6 +8,7 @@ let addButton = inputSection.querySelector("input[type=button]");
 let outputSection = document.getElementById("output-section");
 let tasks = [];
 let tasksHTML;
+let checkOrder = [];
 
 // [1.3] Webpage Initialization
 window.addEventListener("DOMContentLoaded", () => {
@@ -20,8 +21,9 @@ window.addEventListener("DOMContentLoaded", function () {
 
   // [2.1] If there are existing tasks in local storage
   if (localStorageTasks !== null) {
-    // [2.2] Get the tasks as an array
-    tasks = JSON.parse(window.localStorage["tasks"]);
+    // [2.2] Get the tasks & the checked order as an array
+    tasks = JSON.parse(window.localStorage.getItem("tasks"));
+    checkOrder = JSON.parse(window.localStorage.getItem("checkOrder"));
 
     // [2.3] Print the tasks on document
     printAllTasks();
@@ -58,16 +60,17 @@ let printAllTasks = function () {
     let outputTask = document.createElement("input");
     outputTask.type = "checkbox";
     outputTask.id = `task-${tasks.length - i}-checkbox`;
-    outputTask.checked = false;
+    // [5.3.2] Make it checked / unchecked based on what's saved in local storage
+    outputTask.checked = checkOrder[i];
     outputTask.classList.add("output-task-text");
 
-    // [5.3.2] The checkbox label
+    // [5.3.3] The checkbox label
     let outputTaskLabel = document.createElement("label");
     outputTaskLabel.setAttribute("for", outputTask.id);
     outputTaskLabel.classList.add("output-task-text");
     outputTaskLabel.innerHTML = t;
 
-    // [5.3.3] Append the checkbox to the container
+    // [5.3.4] Append the checkbox to the container
     checkboxDiv.appendChild(outputTask);
     checkboxDiv.appendChild(outputTaskLabel);
 
@@ -84,9 +87,11 @@ let printAllTasks = function () {
     outputSection.append(tSection);
   });
 
-  // [5.6] Activate the delete button for each printed task
+  // [5.7] Activate the delete button for each printed task
   tasksHTML = document.querySelectorAll(".output-task");
   activateDeleteButton(tasksHTML);
+  // [5.8] Activate the checkbox button for each printed task
+  activateCheckboxes(tasksHTML);
 };
 
 // [6 - FUNCTION] Input a Task
@@ -97,8 +102,10 @@ let insertTask = function () {
     inputTextField.setAttribute("placeholder", "Add another task");
     // [6.2] Push it to an "tasks" array (descending order)
     tasks.unshift(userInput);
+    checkOrder.unshift(false);
     // [6.3] Update the local storage
     window.localStorage.tasks = JSON.stringify(tasks);
+    window.localStorage.checkOrder = JSON.stringify(checkOrder);
     // [6.4] Print the tasks on the document (Section 7)
     printTask();
     // [6.5] Clear the input text field and focus again
@@ -154,14 +161,16 @@ let printTask = function () {
 
   // [7.9] Activate the delete button for printed tasks
   activateDeleteButton(tasksHTML);
+  activateCheckboxes(tasksHTML);
 };
 
 // [8 - FUNCTION] Delete the recorded tasks
 let activateDeleteButton = function (sectionsWithDelBtn) {
   // [8.1] Get every delete button
-  sectionsWithDelBtn.forEach(function (t) {
+  sectionsWithDelBtn.forEach(function (t, k) {
     let delButton = t.querySelector("button");
     let taskToBeRm = t.querySelector("label").textContent;
+    k = tasks.indexOf(taskToBeRm);
 
     // [8.2] Event trigger
     delButton.onclick = function () {
@@ -169,14 +178,21 @@ let activateDeleteButton = function (sectionsWithDelBtn) {
       t.remove();
 
       // [8.2.2] Remove the value from the tasks array
-      tasks.splice(tasks.indexOf(taskToBeRm), 1);
+      k = tasks.indexOf(taskToBeRm);
+      tasks.splice(k, 1);
+      checkOrder.splice(k, 1);
+      console.log(checkOrder);
+      console.log(k);
+      // [8.2.2] Remove the value from the checks array
 
-      // [8.2.3] Update the local storage with the new array
+      // [8.2.3] Update the local storage with the new arrays
       window.localStorage.tasks = JSON.stringify(tasks);
+      window.localStorage.checkOrder = JSON.stringify(checkOrder);
 
       // [8.2.4] If the deleted task is the only one, remove the whole array from the local storage
       if (tasks.length === 0) {
         window.localStorage.removeItem("tasks");
+        window.localStorage.removeItem("checkOrder");
       }
     };
   });
@@ -185,4 +201,18 @@ let activateDeleteButton = function (sectionsWithDelBtn) {
   if (tasks.length === 0) {
     window.localStorage.removeItem("tasks");
   }
+};
+
+let activateCheckboxes = function (sectionsWithCheckbox) {
+  sectionsWithCheckbox.forEach(function (s, j) {
+    let box = s.querySelector("div").querySelector(`input[type="checkbox"]`);
+    box.onclick = function () {
+      checkOrder[j] = box.checked;
+      console.log(checkOrder);
+      console.log(j);
+      window.localStorage.checkOrder = JSON.stringify(checkOrder);
+      //window.localStorage.checkOrder = JSON.stringify(checkOrder);
+    };
+    window.localStorage.checkOrder = JSON.stringify(checkOrder);
+  });
 };
